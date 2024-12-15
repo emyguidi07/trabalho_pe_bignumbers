@@ -5,7 +5,7 @@ OBJ = bignumber.o client.o
 all: client
 
 client: $(OBJ)
-	$(CC) $(CFLAGS) -o client $(OBJ)
+	$(CC) $(CFLAGS) -o cliente $(OBJ)
 
 bignumber.o: bignumber.c bignumber.h
 	$(CC) $(CFLAGS) -c bignumber.c

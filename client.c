@@ -1,7 +1,8 @@
 /*
 Authors: Emily Guidi 11202320595
          Paloma 
-2024-12-06 - Emily - Implementation sum function and create files 
+2024-12-06 - Emily - Implementation sum function and create files  
+2024-12-15 - Emily - Implementation subtract function and karatsuba Multiply algorithm
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +24,7 @@ int main() {
                 result = subtractBigNumbers(a, b);
                 break;
             case '*':
-                result = multiplyBigNumbers(a, b);
+                result = karatsubaMultiply(a, b);
                 break;
             case '/':
                 result = divideBigNumbers(a, b);
