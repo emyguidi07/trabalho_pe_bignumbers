@@ -339,3 +339,44 @@ BigNumber *parseBigNumberInput() {
     if (scanf("%s", buffer) != 1) return NULL;
     return createBigNumber(buffer);
 }
+
+// dinamic inputs
+char *readinput() {
+    char *input = NULL;
+    char c;
+    int length = 0;
+
+    while (1) {
+        c = getchar();
+        if (c == '\n') {
+            break;
+        }
+
+        char *input_new = realloc(input, (length + 1) * sizeof(char));
+        if (input_new == NULL) {
+            printf("Erro ao alocar memória.\n");
+            free(input);
+            return NULL;
+        }
+        input = input_new;
+
+        input[length] = c;
+        length++;
+    }
+
+    char *input_final = realloc(input, (length + 1) * sizeof(char));
+    input = input_final;
+    input[length] = '\0';
+
+    return input;
+}
+
+// Convert to Bignumber
+BigNumber *stringToBigNumber(const char *str) {
+    BigNumber *bn = createBigNumber(str); 
+    if (bn == NULL) {
+        fprintf(stderr, "Erro ao criar BigNumber.\n");
+        return NULL;
+    }
+    return bn;
+}

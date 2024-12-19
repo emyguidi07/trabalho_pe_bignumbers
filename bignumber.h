@@ -31,6 +31,7 @@ BigNumber *karatsuba(BigNumber *a, BigNumber *b);
 BigNumber *karatsubaMultiply(BigNumber *a, BigNumber *b); 
 bool isSingleDigit(BigNumber *bn);                        
 void splitBigNumber(BigNumber *bn, int position, BigNumber **high, BigNumber **low); 
-void appendNode(BigNumber *bn, Node *newNode);            
-
+void appendNode(BigNumber *bn, Node *newNode); 
+char *readinput();
+BigNumber *stringToBigNumber(const char *str);
 #endif
