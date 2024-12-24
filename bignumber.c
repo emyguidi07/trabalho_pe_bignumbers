@@ -380,3 +380,68 @@ BigNumber *stringToBigNumber(const char *str) {
     }
     return bn;
 }
+
+// Function to perform integer division of two BigNumbers
+BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
+    if (compareBigNumbers(a, b) < 0) {
+        // If dividend is smaller than divisor, result is 0
+        return createBigNumber("0");
+    }
+
+    BigNumber *result = createBigNumber("0");
+    BigNumber *temp = createBigNumber("0");
+
+    while (compareBigNumbers(a, b) >= 0) {
+        // Repeatedly subtract the divisor from the dividend
+        a = subtractBigNumbers(a, b);
+
+        // Increment the result
+        result = addBigNumbers(result, createBigNumber("1"));
+    }
+
+    // Free the temporary BigNumber
+    freeBigNumber(temp);
+
+    return result;
+}
+
+// Recursive function to calculate exponentiation of a BigNumber
+BigNumber *exponentiate(BigNumber *base, BigNumber *exponent) {
+    if (compareBigNumbers(exponent, createBigNumber("0")) == 0) {
+        // Base case: exponent is 0, result is 1
+        return createBigNumber("1");
+    }
+
+    BigNumber *half = divideBigNumbers(exponent, createBigNumber("2"));
+    BigNumber *temp = exponentiate(base, half);
+    freeBigNumber(half);
+
+    if (exponent->isNegative) {
+        // If exponent is negative, use the reciprocal
+        return divideBigNumbers(createBigNumber("1"), multiplyBigNumbers(temp, temp));
+    } else if (exponent->head->digit % 2 == 0) {
+        // If exponent is even, return temp * temp
+        return multiplyBigNumbers(temp, temp);
+    } else {
+        // If exponent is odd, return base * temp * temp
+        return multiplyBigNumbers(base, multiplyBigNumbers(temp, temp));
+    }
+}
+
+// Function to calculate the remainder of the division of two BigNumbers
+BigNumber *modulo(BigNumber *a, BigNumber *b) {
+    // Calculate the quotient
+    BigNumber *quotient = divideBigNumbers(a, b);
+
+    // Calculate the product of quotient and divisor
+    BigNumber *product = multiplyBigNumbers(quotient, b);
+
+    // Subtract the product from the dividend
+    BigNumber *remainder = subtractBigNumbers(a, product);
+
+    // Free temporary memory
+    freeBigNumber(quotient);
+    freeBigNumber(product);
+
+    return remainder;
+}
