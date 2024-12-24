@@ -51,19 +51,19 @@ Divisão de tarefas do trabalho
 
 Emily:
 
--Criação da estrutura de arquivos;
+- Criação da estrutura de arquivos;
 
--Função Soma;
+- Função Soma;
 
--Função Subtração;
+- Função Subtração;
 
--Multiplicação Karatsuba;
+- Multiplicação Karatsuba;
 
--Melhoria nos dados de entrada do programa (modelo passado em sala de aula para captar dígito por dígito do Bignumber);
+- Melhoria nos dados de entrada do programa (modelo passado em sala de aula para captar dígito por dígito do Bignumber);
 
--Bateria de testes das três funcionalidades;
+- Bateria de testes das três funcionalidades;
 
--Melhoria em bug do karatsuba (estava lendo apenas multiplicações de somente um dígito).
+- Melhoria em bug do karatsuba (estava lendo apenas multiplicações de somente um dígito).
 
 
 Paloma: 
