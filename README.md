@@ -3,7 +3,9 @@ Trabalho de bignumbers em C
 
 Estrutura e Organização
 O código apresentado implementa uma classe para manipular números inteiros arbitrariamente grandes, denominados BigNumbers. A estrutura principal é uma lista duplamente encadeada, onde cada nó representa um dígito do número. A nossa estrutura de scripts foi a minima de bignumber.h , bignumber.c , makefile e cliente.c.
+
 Funcionalidades Implementadas
+
 Criação e destruição: As funções createBigNumber e freeBigNumber permitem alocar e liberar memória para os objetos BigNumber.
 Operações aritméticas básicas:
 Adição: Implementada de forma eficiente, considerando o carry.
@@ -18,13 +20,17 @@ Gerenciamento de sinal: A classe BigNumber suporta números negativos.
 Leitura de entrada dinâmica: A função readinput permite ler números de tamanho arbitrário da entrada padrão.
 Alocação dinâmica de memória: O código utiliza malloc e free para alocar e liberar memória conforme necessário.
 Algoritmos eficientes: O uso de Karatsuba e exponenciação por quadrados otimiza o desempenho para números grandes.
+
 Interface Pública
 A interface pública da classe BigNumber é composta pelas funções descritas anteriormente. Essas funções permitem criar, manipular e destruir objetos BigNumber.
+
 Algoritmos e Estruturas de Dados Avançadas
 Karatsuba: Utilizado para multiplicação de números grandes, reduzindo a complexidade em relação à multiplicação escolar.
 Exponenciação por quadrados: Um algoritmo eficiente para calcular potências.
 Lista duplamente encadeada: A estrutura de dados principal, escolhida por sua flexibilidade para inserir e remover elementos em qualquer posição.
+
 Divisão de tarefas do trabalho 
+
 Emily:
 -Criação da estrutura de arquivos;
 -Função Soma;
@@ -41,4 +47,3 @@ Paloma:
 - Elaborar função de resto de divisão; 
 - Testar essas três funções manualmente e com os arquivos dele de teste;
 - Escrever o READ ME.
-
