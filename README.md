@@ -6,6 +6,7 @@ Estrutura e Organização: O código apresentado implementa uma classe para mani
 Funcionalidades Implementadas
 
 Criação e destruição: As funções createBigNumber e freeBigNumber permitem alocar e liberar memória para os objetos BigNumber.
+
 Operações aritméticas básicas:
 Adição: Implementada de forma eficiente, considerando o carry.
 Subtração: Implementada de forma similar à adição, com o cuidado de lidar com empréstimos.
