@@ -8,17 +8,29 @@ Funcionalidades Implementadas
 Criação e destruição: As funções createBigNumber e freeBigNumber permitem alocar e liberar memória para os objetos BigNumber.
 
 Operações aritméticas básicas:
+
 Adição: Implementada de forma eficiente, considerando o carry.
+
 Subtração: Implementada de forma similar à adição, com o cuidado de lidar com empréstimos.
+
 Multiplicação: Utiliza o algoritmo de Karatsuba para otimizar a multiplicação de números grandes.
+
 Divisão: Implementada usando um algoritmo de divisão longa.
+
 Exponenciação: Utiliza o método de exponenciação por quadrados para otimizar o cálculo de potências.
+
 Módulo: Calcula o resto da divisão.
+
 Comparação: A função compareBigNumbers compara a magnitude de dois números.
+
 Conversão: Converte entre strings e BigNumbers.
+
 Gerenciamento de sinal: A classe BigNumber suporta números negativos.
+
 Leitura de entrada dinâmica: A função readinput permite ler números de tamanho arbitrário da entrada padrão.
+
 Alocação dinâmica de memória: O código utiliza malloc e free para alocar e liberar memória conforme necessário.
+
 Algoritmos eficientes: O uso de Karatsuba e exponenciação por quadrados otimiza o desempenho para números grandes.
 
 Interface Pública
