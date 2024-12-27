@@ -27,7 +27,6 @@ BigNumber *parseBigNumberInput();
 BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b);
 BigNumber *shiftBigNumber(BigNumber *a, int positions);
 int getLength(BigNumber *a);
-BigNumber *karatsuba(BigNumber *a, BigNumber *b);
 BigNumber *karatsubaMultiply(BigNumber *a, BigNumber *b); 
 bool isSingleDigit(BigNumber *bn);                        
 void splitBigNumber(BigNumber *bn, int position, BigNumber **high, BigNumber **low); 

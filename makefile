@@ -14,4 +14,4 @@ client.o: client.c bignumber.h
 	$(CC) $(CFLAGS) -c client.c
 
 clean:
-	rm -f *.o client
+	rm -f *.o cliente

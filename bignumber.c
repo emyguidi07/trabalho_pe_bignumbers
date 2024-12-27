@@ -318,11 +318,6 @@ BigNumber *shiftBigNumber(BigNumber *bn, int positions) {
     return result;
 }
 
-// Placeholder function for dividing two BigNumbers
-BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
-    // Aqui será implementada a divisão
-    return createBigNumber("0"); // Placeholder
-}
 
 // Prints a BigNumber to the console
 void printBigNumber(BigNumber *bn) {
