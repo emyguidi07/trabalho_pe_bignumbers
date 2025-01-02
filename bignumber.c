@@ -202,57 +202,180 @@ int compareBigNumbers(BigNumber *a, BigNumber *b) {
     return 0;
 }
 
-// Multiplies two BigNumber structures using the Karatsuba algorithm
-BigNumber *karatsubaMultiply(BigNumber *a, BigNumber *b) {
-    // Base case: single-digit numbers
-    if (isSingleDigit(a) && isSingleDigit(b)) {
-        int product = (a->head->digit) * (b->head->digit);
-        char buffer[10];
-        snprintf(buffer, sizeof(buffer), "%d", product);
+BigNumber *shiftBigNumber(BigNumber *num, int m) {
+    for (int i = 0; i < m; i++) {
+        // Crie um novo nó com o dígito 0 diretamente dentro da função
+        Node *newNode = (Node *)malloc(sizeof(Node));
+        newNode->digit = 0;
+        newNode->next = NULL;
+        newNode->prev = NULL;
 
-        BigNumber *result = createBigNumber(buffer);
-        // Adjust the sign for the base case
-        result->isNegative = (a->isNegative != b->isNegative);
-        return result;
+        // Adicione o novo nó ao final do BigNumber
+        if (num->tail == NULL) {
+            // Se o número estiver vazio, inicialize a lista
+            num->head = num->tail = newNode;
+        } else {
+            // Caso contrário, anexe ao final
+            num->tail->next = newNode;
+            newNode->prev = num->tail;
+            num->tail = newNode;
+        }
     }
-    // Determine the length of the numbers
-    int lenA = getLength(a);
-    int lenB = getLength(b);
-    int maxLen = lenA > lenB ? lenA : lenB;
-    int half = maxLen / 2;
-    // Split the numbers into high and low parts
-    BigNumber *highA, *lowA, *highB, *lowB;
-    splitBigNumber(a, half, &highA, &lowA);
-    splitBigNumber(b, half, &highB, &lowB);
-    // Calculate the products recursively
-    BigNumber *z0 = karatsubaMultiply(lowA, lowB);                // Product of lower parts
-    BigNumber *z1 = karatsubaMultiply(addBigNumbers(lowA, highA), addBigNumbers(lowB, highB)); // Cross product
-    BigNumber *z2 = karatsubaMultiply(highA, highB);              // Product of higher parts
-    // Adjust z1 to subtract z0 and z2
-    BigNumber *z1Adjusted = subtractBigNumbers(z1, addBigNumbers(z0, z2));
-    // Combine the results
-    BigNumber *result = addBigNumbers(
-        addBigNumbers(shiftBigNumber(z2, 2 * half), shiftBigNumber(z1Adjusted, half)),
-        z0
-    );
-    // Adjust the final sign of the result
-    result->isNegative = (a->isNegative != b->isNegative);
-    // Free temporary memory
-    freeBigNumber(z0);
-    freeBigNumber(z1);
-    freeBigNumber(z2);
-    freeBigNumber(z1Adjusted);
-    freeBigNumber(highA);
-    freeBigNumber(lowA);
-    freeBigNumber(highB);
-    freeBigNumber(lowB);
+    return num;
+}
+
+void appendNode(BigNumber *bigNumber, Node *newNode) {
+    if (bigNumber->head == NULL) {
+        // Se a lista está vazia, o novo nó é tanto a cabeça quanto a cauda.
+        bigNumber->head = bigNumber->tail = newNode;
+    } else {
+        // Adicione o nó ao final da lista.
+        bigNumber->tail->next = newNode;
+        newNode->prev = bigNumber->tail;
+        bigNumber->tail = newNode;
+    }
+    newNode->next = NULL; // Assegure-se de que o próximo nó é NULL.
+}
+
+void splitBigNumber(BigNumber *original, BigNumber **high, BigNumber **low, int m) {
+    Node *current = original->head;
+    *high = createBigNumber("0");
+    *low = createBigNumber("0");
+
+    int count = 0;
+    while (current) {
+        Node *newNode = (Node *)malloc(sizeof(Node));
+        newNode->digit = current->digit;
+        newNode->prev = NULL;
+        newNode->next = NULL;
+
+        // Verifica se deve adicionar à parte "high" ou "low"
+        if (count < m) {
+            appendNode(*high, newNode);  // Adiciona à parte "high"
+        } else {
+            appendNode(*low, newNode);   // Adiciona à parte "low"
+        }
+
+        current = current->next;
+        count++;
+    }
+
+    // Exibindo as partes para verificar
+    printf("High part: ");
+    printBigNumber(*high);
+    printf("Low part: ");
+    printBigNumber(*low);
+}
+
+
+//Multiply BigNumbers 
+BigNumber *multiplyBigNumbers(BigNumber *a, BigNumber *b) {
+    BigNumber *result = (BigNumber *)malloc(sizeof(BigNumber));
+    result->head = result->tail = NULL;
+    result->isNegative = a->isNegative != b->isNegative;  
+    int len1 = 0, len2 = 0;
+    Node *temp1 = a->head;
+    while (temp1) {
+        len1++;
+        temp1 = temp1->next;
+    }
+    Node *temp2 = b->head;
+    while (temp2) {
+        len2++;
+        temp2 = temp2->next;
+    }
+    // array to product
+    int *product = (int *)calloc(len1 + len2, sizeof(int));
+    // multiply bignumbers
+    Node *node1 = a->tail;
+    for (int i = 0; i < len1; i++) {
+        Node *node2 = b->tail;
+        for (int j = 0; j < len2; j++) {
+            product[i + j] += (node1->digit) * (node2->digit);
+            node2 = node2->prev;
+        }
+        node1 = node1->prev;
+    }
+    // init carry
+    int carry = 0;
+    for (int k = 0; k < len1 + len2; k++) {
+        product[k] += carry;
+        carry = product[k] / 10;
+        product[k] %= 10;
+    }
+    // create result bignumber
+    for (int i = len1 + len2 - 1; i >= 0; i--) {
+        // verify if it has left zero
+        if (i < len1 + len2 - 1 || product[i] != 0) {
+            Node *newNode = (Node *)malloc(sizeof(Node));
+            newNode->digit = product[i];
+            newNode->prev = result->tail;
+            newNode->next = NULL;
+            
+            if (result->tail) {
+                result->tail->next = newNode;
+            } else {
+                result->head = newNode;
+            }
+            result->tail = newNode;
+        }
+    }
+    free(product);  
     return result;
 }
 
-// Checks if a BigNumber has only one digit
-bool isSingleDigit(BigNumber *bn) {
-    return (bn->head == bn->tail);
+BigNumber *karatsuba(BigNumber *a, BigNumber *b) {
+    int len1 = getLength(a);
+    int len2 = getLength(b);
+    // Caso base: se os números forem pequenos, use a multiplicação direta
+    if (len1 == 1 || len2 == 1) {
+        return multiplyBigNumbers(a, b);
+    }
+
+    // Determinar o tamanho da divisão (média entre os tamanhos)
+    int m = len1  / 2;
+    int n = len2  / 2;
+    // Dividir os números em metades
+    BigNumber *a0, *a1, *b0, *b1;
+    splitBigNumber(a, &a1, &a0, m);
+    splitBigNumber(b, &b1, &b0, n);
+
+    // Inicializar variáveis intermediárias
+    BigNumber *z0 = multiplyBigNumbers(a0, b0); // z0 = a0 * b0
+    BigNumber *z2 = multiplyBigNumbers(a1, b1); // z2 = a1 * b1
+
+    // Calcular as somas intermediárias
+    BigNumber *sumA = addBigNumbers(a0, a1); // (a0 + a1)
+    BigNumber *sumB = addBigNumbers(b0, b1); // (b0 + b1)
+    BigNumber *z1 = multiplyBigNumbers(sumA, sumB); // z1 = (a0 + a1) * (b0 + b1)
+
+    // Ajustar z1: z1 = z1 - z0 - z2
+    BigNumber *temp = addBigNumbers(z0, z2);
+    z1 = subtractBigNumbers(z1, temp);
+
+    // Combinar os resultados finais
+    BigNumber *z2Shifted = shiftBigNumber(z2, 2 * m); // z2 * 10^(2*m)
+    BigNumber *z1Shifted = shiftBigNumber(z1, m);     // z1 * 10^m
+    BigNumber *result = addBigNumbers(z2Shifted, z1Shifted);
+    result = addBigNumbers(result, z0);
+
+    // Liberar memória alocada para BigNumbers intermediários
+    freeBigNumber(a0);
+    freeBigNumber(a1);
+    freeBigNumber(b0);
+    freeBigNumber(b1);
+    freeBigNumber(z0);
+    freeBigNumber(z1);
+    freeBigNumber(z2);
+    freeBigNumber(temp);
+    freeBigNumber(z2Shifted);
+    freeBigNumber(z1Shifted);
+    freeBigNumber(sumA);
+    freeBigNumber(sumB);
+
+    return result;
 }
+
 
 // Returns the length of a BigNumber
 int getLength(BigNumber *bn) {
@@ -262,77 +385,17 @@ int getLength(BigNumber *bn) {
     return length;
 }
 
-// Splits a BigNumber into high and low parts
-void splitBigNumber(BigNumber *bn, int position, BigNumber **high, BigNumber **low) {
-    *high = createBigNumber("0");
-    *low = createBigNumber("0");
-    Node *current = bn->head;
-    int index = 0;
-    while (current) {
-        Node *newNode = (Node *)malloc(sizeof(Node));
-        newNode->digit = current->digit;
-        newNode->prev = newNode->next = NULL;
-        if (index < position) 
-            appendNode(*low, newNode);
-        else
-            appendNode(*high, newNode);
-        current = current->next;
-        index++;
-    }
-}
-
-// Appends a new node to an existing BigNumber
-void appendNode(BigNumber *bn, Node *newNode) {
-    if (!bn->head) {
-        bn->head = bn->tail = newNode;
-    } else {
-        bn->tail->next = newNode;
-        newNode->prev = bn->tail;
-        bn->tail = newNode;
-    }
-}
-
-// Shifts a BigNumber left by a specified number of positions
-BigNumber *shiftBigNumber(BigNumber *bn, int positions) {
-    if (isSingleDigit(bn) && bn->head->digit == 0) {
-        return createBigNumber("0");
-    }
-    // Create a new BigNumber to store the shifted result
-    BigNumber *result = createBigNumber("0");
-    // Copy digits from original BigNumber to result
-    for (Node *current = bn->head; current; current = current->next) {
-        Node *newNode = (Node *)malloc(sizeof(Node));
-        newNode->digit = current->digit;
-        newNode->prev = newNode->next = NULL;
-        appendNode(result, newNode);
-    }
-    // Append leading zeros based on the shift amount
-    for (int i = 0; i < positions; i++) {
-        Node *newNode = (Node *)malloc(sizeof(Node));
-        newNode->digit = 0;
-        newNode->prev = NULL;
-        newNode->next = result->head;
-        result->head->prev = newNode;
-        result->head = newNode;
-    }
-    return result;
-}
-
-
 // Prints a BigNumber to the console
 void printBigNumber(BigNumber *bn) {
-    if (bn->isNegative) printf("-");
-    for (Node *current = bn->head; current != NULL; current = current->next) {
-        printf("%c", current->digit + '0');
+    if (bn->isNegative) {
+        printf("-");
+    }
+    Node *current = bn->head;
+    while (current) {
+        printf("%d", current->digit);
+        current = current->next;
     }
     printf("\n");
-}
-
-// Parses input string to create a BigNumber structure
-BigNumber *parseBigNumberInput() {
-    char buffer[10000];
-    if (scanf("%s", buffer) != 1) return NULL;
-    return createBigNumber(buffer);
 }
 
 // dinamic inputs

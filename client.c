@@ -54,7 +54,7 @@ int main() {
                 result = subtractBigNumbers(bignumber1, bignumber2);
                 break;
             case '*':
-                result = karatsubaMultiply(bignumber1, bignumber2);
+                result = karatsuba(bignumber1, bignumber2);
                 break;
             case '/':
                 result = divideBigNumbers(bignumber1, bignumber2);
