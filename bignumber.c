@@ -440,51 +440,56 @@ BigNumber *stringToBigNumber(const char *str) {
 }
 
 // Function to perform integer division of two BigNumbers
-BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
+void divideBigNumbers(BigNumber *a, BigNumber *b, BigNumber **result) {
     if (compareBigNumbers(a, b) < 0) {
-        return createBigNumber("0");
+        *result = createBigNumber("0"); 
+        return;
     }
 
-    BigNumber *result = createBigNumber("0");
-    BigNumber *temp = createBigNumber("0");
+    *result = createBigNumber("0"); 
+    BigNumber *temp = createBigNumber("0"); 
 
     while (compareBigNumbers(a, b) >= 0) {
         a = subtractBigNumbers(a, b);
-        result = addBigNumbers(result, createBigNumber("1"));
+        *result = addBigNumbers(*result, createBigNumber("1")); 
     }
-    freeBigNumber(temp);
-    return result;
+    freeBigNumber(temp); 
 }
 
 // Recursive function to calculate exponentiation of a BigNumber
-BigNumber *exponentiate(BigNumber *base, BigNumber *exponent) {
+void exponentiate(BigNumber *base, BigNumber *exponent, BigNumber **result) {
     if (compareBigNumbers(exponent, createBigNumber("0")) == 0) {
-        return createBigNumber("1");
+        *result = createBigNumber("1"); 
+        return;
     }
 
-    BigNumber *half = divideBigNumbers(exponent, createBigNumber("2"));
-    BigNumber *temp = exponentiate(base, half);
+    BigNumber *half; 
+    divideBigNumbers(exponent, createBigNumber("2"), &half); 
+    BigNumber *temp;
+    exponentiate(base, half, &temp); 
     freeBigNumber(half);
 
     if (exponent->isNegative) {
-        return divideBigNumbers(createBigNumber("1"), multiplyBigNumbers(temp, temp));
+        divideBigNumbers(createBigNumber("1"), multiplyBigNumbers(temp, temp), result);
     } else if (exponent->head->digit % 2 == 0) {
-        return multiplyBigNumbers(temp, temp);
+        *result = multiplyBigNumbers(temp, temp); 
     } else {
-        return multiplyBigNumbers(base, multiplyBigNumbers(temp, temp));
+        *result = multiplyBigNumbers(base, multiplyBigNumbers(temp, temp)); 
     }
+
+    freeBigNumber(temp); 
 }
 
 // Function to calculate the remainder of the division of two BigNumbers
-BigNumber *modulo(BigNumber *a, BigNumber *b) {
-    BigNumber *quotient = divideBigNumbers(a, b);
+void modulo(BigNumber *a, BigNumber *b, BigNumber **result) {
+    BigNumber *quotient;
+    divideBigNumbers(a, b, &quotient); 
 
     BigNumber *product = multiplyBigNumbers(quotient, b);
 
-    BigNumber *remainder = subtractBigNumbers(a, product);
+    *result = subtractBigNumbers(a, product); 
 
     freeBigNumber(quotient);
     freeBigNumber(product);
-
-    return remainder;
 }
+
