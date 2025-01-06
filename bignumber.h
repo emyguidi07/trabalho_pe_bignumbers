@@ -32,4 +32,6 @@ BigNumber *karatsuba(BigNumber *a, BigNumber *b);
 char *readinput();
 BigNumber *multiplyBigNumbers(BigNumber *bn1, BigNumber *bn2);
 BigNumber *stringToBigNumber(const char *str);
+BigNumber *exponentiate(BigNumber *base, BigNumber *exponent); 
+BigNumber *modulo(BigNumber *a, BigNumber *b)
 #endif
