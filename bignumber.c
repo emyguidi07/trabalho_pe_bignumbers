@@ -261,10 +261,10 @@ void splitBigNumber(BigNumber *original, BigNumber **high, BigNumber **low, int 
     }
 
     // Exibindo as partes para verificar
-    printf("High part: ");
+    /*printf("High part: ");
     printBigNumber(*high);
     printf("Low part: ");
-    printBigNumber(*low);
+    printBigNumber(*low);*/
 }
 
 

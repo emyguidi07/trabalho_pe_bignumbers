@@ -54,10 +54,16 @@ int main() {
                 result = subtractBigNumbers(bignumber1, bignumber2);
                 break;
             case '*':
-                result = karatsuba(bignumber1, bignumber2);
+                result = multiplyBigNumbers(bignumber1, bignumber2);
                 break;
             case '/':
                 result = divideBigNumbers(bignumber1, bignumber2);
+                break;
+            case '%':
+                result = modulo(bignumber1, bignumber2);
+                break;
+            case '^':
+                result = exponentiate(bignumber1, bignumber2);
                 break;
             default:
                 fprintf(stderr, "Operação inválida!\n");
