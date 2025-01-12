@@ -439,57 +439,63 @@ BigNumber *stringToBigNumber(const char *str) {
     return bn;
 }
 
-// Function to perform integer division of two BigNumbers
-void divideBigNumbers(BigNumber *a, BigNumber *b, BigNumber **result) {
+// Divisão inteira (Euclidiana)
+BigNumber *divisaoInteira(BigNumber *a, BigNumber *b) {
     if (compareBigNumbers(a, b) < 0) {
-        *result = createBigNumber("0"); 
-        return;
+        // Se o dividendo for menor que o divisor, o resultado é zero
+        return createBigNumber("0");
     }
 
-    *result = createBigNumber("0"); 
-    BigNumber *temp = createBigNumber("0"); 
+    BigNumber *quociente = createBigNumber("0");
+    BigNumber *temporario = createBigNumber("0"); 
 
-    while (compareBigNumbers(a, b) >= 0) {
-        a = subtractBigNumbers(a, b);
-        *result = addBigNumbers(*result, createBigNumber("1")); 
+    while (compareBigNumbers(a, temporario) >= 0) {
+        quociente = addBigNumbers(quociente, createBigNumber("1"));
+        temporario = addBigNumbers(temporario, b);
     }
-    freeBigNumber(temp); 
+
+    // Ajustar o quociente, pois o último incremento pode ter excedido
+    quociente = subtractBigNumbers(quociente, createBigNumber("1"));
+
+    freeBigNumber(temporario); 
+    return quociente;
 }
 
-// Recursive function to calculate exponentiation of a BigNumber
-void exponentiate(BigNumber *base, BigNumber *exponent, BigNumber **result) {
-    if (compareBigNumbers(exponent, createBigNumber("0")) == 0) {
-        *result = createBigNumber("1"); 
-        return;
+// Exponenciação 
+BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
+    if (compareBigNumbers(expoente, createBigNumber("0")) == 0) {
+        // Caso base: qualquer número elevado a 0 é 1
+        return createBigNumber("1");
     }
 
-    BigNumber *half; 
-    divideBigNumbers(exponent, createBigNumber("2"), &half); 
-    BigNumber *temp;
-    exponentiate(base, half, &temp); 
-    freeBigNumber(half);
-
-    if (exponent->isNegative) {
-        divideBigNumbers(createBigNumber("1"), multiplyBigNumbers(temp, temp), result);
-    } else if (exponent->head->digit % 2 == 0) {
-        *result = multiplyBigNumbers(temp, temp); 
-    } else {
-        *result = multiplyBigNumbers(base, multiplyBigNumbers(temp, temp)); 
+    if (compareBigNumbers(expoente, createBigNumber("1")) == 0) {
+        // Caso base: qualquer número elevado a 1 é ele mesmo
+        return base;
     }
 
-    freeBigNumber(temp); 
+    BigNumber *metade = divisaoInteira(expoente, createBigNumber("2")); 
+    BigNumber *temp = exponenciacao(base, metade); 
+    BigNumber *resultado = multiplyBigNumbers(temp, temp); 
+
+    if (expoente->isNegative == false && expoente->head->digit % 2 == 1) { 
+        resultado = multiplyBigNumbers(resultado, base); 
+    }
+
+    freeBigNumber(metade);
+    freeBigNumber(temp);
+
+    return resultado;
 }
 
-// Function to calculate the remainder of the division of two BigNumbers
-void modulo(BigNumber *a, BigNumber *b, BigNumber **result) {
-    BigNumber *quotient;
-    divideBigNumbers(a, b, &quotient); 
+// Resto da divisão
+BigNumber *restoDivisao(BigNumber *a, BigNumber *b) {
+    BigNumber *quociente = divisaoInteira(a, b);
+    BigNumber *produto = multiplyBigNumbers(quociente, b);
+    BigNumber *resto = subtractBigNumbers(a, produto);
 
-    BigNumber *product = multiplyBigNumbers(quotient, b);
+    freeBigNumber(quociente);
+    freeBigNumber(produto);
 
-    *result = subtractBigNumbers(a, product); 
-
-    freeBigNumber(quotient);
-    freeBigNumber(product);
+    return resto;
 }
 
