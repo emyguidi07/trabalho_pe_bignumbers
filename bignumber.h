@@ -35,4 +35,5 @@ BigNumber *stringToBigNumber(const char *str);
 BigNumber *exponentiate(BigNumber *base, BigNumber *exponent); 
 BigNumber *modulo(BigNumber *a, BigNumber *b);
 BigNumber *restoDivisao(BigNumber *a, BigNumber *b);
+BigNumber *divisaoInteira(BigNumber *a, BigNumber *b)
 #endif
