@@ -440,26 +440,27 @@ BigNumber *stringToBigNumber(const char *str) {
 }
 
 // Divisão inteira (Euclidiana)
-BigNumber *divisaoInteira(BigNumber *a, BigNumber *b) {
-    if (compareBigNumbers(a, b) < 0) {
-        // Se o dividendo for menor que o divisor, o resultado é zero
-        return createBigNumber("0");
+BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
+    int sinalResultado = 1; 
+    if (a->isNegative != b->isNegative) {
+        sinalResultado = -1; 
     }
-
+    BigNumber *dividendo = a->isNegative ? subtractBigNumbers(createBigNumber("0"), a) : a;
+    BigNumber *divisor = b->isNegative ? subtractBigNumbers(createBigNumber("0"), b) : b;
     BigNumber *quociente = createBigNumber("0");
     BigNumber *temporario = createBigNumber("0"); 
-
-    while (compareBigNumbers(a, temporario) >= 0) {
+    while (compareBigNumbers(dividendo, temporario) >= 0) {
         quociente = addBigNumbers(quociente, createBigNumber("1"));
-        temporario = addBigNumbers(temporario, b);
+        temporario = addBigNumbers(temporario, divisor);
     }
-
-    // Ajustar o quociente, pois o último incremento pode ter excedido
     quociente = subtractBigNumbers(quociente, createBigNumber("1"));
-
+    quociente->isNegative = sinalResultado == -1;
     freeBigNumber(temporario); 
+    if (a->isNegative) freeBigNumber(dividendo);
+    if (b->isNegative) freeBigNumber(divisor);
     return quociente;
 }
+
 
 // Exponenciação 
 BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
@@ -467,35 +468,28 @@ BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
         // Caso base: qualquer número elevado a 0 é 1
         return createBigNumber("1");
     }
-
     if (compareBigNumbers(expoente, createBigNumber("1")) == 0) {
         // Caso base: qualquer número elevado a 1 é ele mesmo
         return base;
     }
-
-    BigNumber *metade = divisaoInteira(expoente, createBigNumber("2")); 
+    BigNumber *metade = divideBigNumbers(expoente, createBigNumber("2")); 
     BigNumber *temp = exponenciacao(base, metade); 
     BigNumber *resultado = multiplyBigNumbers(temp, temp); 
-
     if (expoente->isNegative == false && expoente->head->digit % 2 == 1) { 
         resultado = multiplyBigNumbers(resultado, base); 
     }
-
     freeBigNumber(metade);
     freeBigNumber(temp);
-
     return resultado;
 }
 
 // Resto da divisão
 BigNumber *restoDivisao(BigNumber *a, BigNumber *b) {
-    BigNumber *quociente = divisaoInteira(a, b);
+    BigNumber *quociente = divideBigNumbers(a, b);
     BigNumber *produto = multiplyBigNumbers(quociente, b);
     BigNumber *resto = subtractBigNumbers(a, produto);
-
     freeBigNumber(quociente);
     freeBigNumber(produto);
-
     return resto;
 }
 

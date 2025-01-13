@@ -60,10 +60,10 @@ int main() {
                 result = divideBigNumbers(bignumber1, bignumber2);
                 break;
             case '%':
-                result = modulo(bignumber1, bignumber2);
+                result = restoDivisao(bignumber1, bignumber2);
                 break;
             case '^':
-                result = exponentiate(bignumber1, bignumber2);
+                result = exponenciacao(bignumber1, bignumber2);
                 break;
             default:
                 fprintf(stderr, "Operação inválida!\n");
