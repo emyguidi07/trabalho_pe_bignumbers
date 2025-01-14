@@ -1,9 +1,6 @@
 /*
 Authors: Emily Guidi 11202320595
          Paloma Lima 11202021803
-2024-12-06 - Emily - Implementation sum function and create files 
-2024-12-15 - Emily - Implementation subtract function and karatsuba Multiply algorithm
-2024-12-18 - Emily - Fixing inputs to each Bignumber
 */
 #include <stdio.h>
 #include <stdlib.h>

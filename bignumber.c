@@ -1,8 +1,6 @@
 /*
 Authors: Emily Guidi 11202320595
          Paloma Lima 11202021803
-2024-12-06 - Emily - Implementation sum function and create files 
-2024-12-15 - Emily - Implementation subtract function and karatsuba Multiply algorithm
 */
 
 #include <stdio.h>
@@ -202,72 +200,6 @@ int compareBigNumbers(BigNumber *a, BigNumber *b) {
     return 0;
 }
 
-BigNumber *shiftBigNumber(BigNumber *num, int m) {
-    for (int i = 0; i < m; i++) {
-        // Crie um novo nó com o dígito 0 diretamente dentro da função
-        Node *newNode = (Node *)malloc(sizeof(Node));
-        newNode->digit = 0;
-        newNode->next = NULL;
-        newNode->prev = NULL;
-
-        // Adicione o novo nó ao final do BigNumber
-        if (num->tail == NULL) {
-            // Se o número estiver vazio, inicialize a lista
-            num->head = num->tail = newNode;
-        } else {
-            // Caso contrário, anexe ao final
-            num->tail->next = newNode;
-            newNode->prev = num->tail;
-            num->tail = newNode;
-        }
-    }
-    return num;
-}
-
-void appendNode(BigNumber *bigNumber, Node *newNode) {
-    if (bigNumber->head == NULL) {
-        // Se a lista está vazia, o novo nó é tanto a cabeça quanto a cauda.
-        bigNumber->head = bigNumber->tail = newNode;
-    } else {
-        // Adicione o nó ao final da lista.
-        bigNumber->tail->next = newNode;
-        newNode->prev = bigNumber->tail;
-        bigNumber->tail = newNode;
-    }
-    newNode->next = NULL; // Assegure-se de que o próximo nó é NULL.
-}
-
-void splitBigNumber(BigNumber *original, BigNumber **high, BigNumber **low, int m) {
-    Node *current = original->head;
-    *high = createBigNumber("0");
-    *low = createBigNumber("0");
-
-    int count = 0;
-    while (current) {
-        Node *newNode = (Node *)malloc(sizeof(Node));
-        newNode->digit = current->digit;
-        newNode->prev = NULL;
-        newNode->next = NULL;
-
-        // Verifica se deve adicionar à parte "high" ou "low"
-        if (count < m) {
-            appendNode(*high, newNode);  // Adiciona à parte "high"
-        } else {
-            appendNode(*low, newNode);   // Adiciona à parte "low"
-        }
-
-        current = current->next;
-        count++;
-    }
-
-    // Exibindo as partes para verificar
-    /*printf("High part: ");
-    printBigNumber(*high);
-    printf("Low part: ");
-    printBigNumber(*low);*/
-}
-
-
 //Multiply BigNumbers 
 BigNumber *multiplyBigNumbers(BigNumber *a, BigNumber *b) {
     BigNumber *result = (BigNumber *)malloc(sizeof(BigNumber));
@@ -324,59 +256,6 @@ BigNumber *multiplyBigNumbers(BigNumber *a, BigNumber *b) {
     return result;
 }
 
-BigNumber *karatsuba(BigNumber *a, BigNumber *b) {
-    int len1 = getLength(a);
-    int len2 = getLength(b);
-    // Caso base: se os números forem pequenos, use a multiplicação direta
-    if (len1 == 1 || len2 == 1) {
-        return multiplyBigNumbers(a, b);
-    }
-
-    // Determinar o tamanho da divisão (média entre os tamanhos)
-    int m = len1  / 2;
-    int n = len2  / 2;
-    // Dividir os números em metades
-    BigNumber *a0, *a1, *b0, *b1;
-    splitBigNumber(a, &a1, &a0, m);
-    splitBigNumber(b, &b1, &b0, n);
-
-    // Inicializar variáveis intermediárias
-    BigNumber *z0 = multiplyBigNumbers(a0, b0); // z0 = a0 * b0
-    BigNumber *z2 = multiplyBigNumbers(a1, b1); // z2 = a1 * b1
-
-    // Calcular as somas intermediárias
-    BigNumber *sumA = addBigNumbers(a0, a1); // (a0 + a1)
-    BigNumber *sumB = addBigNumbers(b0, b1); // (b0 + b1)
-    BigNumber *z1 = multiplyBigNumbers(sumA, sumB); // z1 = (a0 + a1) * (b0 + b1)
-
-    // Ajustar z1: z1 = z1 - z0 - z2
-    BigNumber *temp = addBigNumbers(z0, z2);
-    z1 = subtractBigNumbers(z1, temp);
-
-    // Combinar os resultados finais
-    BigNumber *z2Shifted = shiftBigNumber(z2, 2 * m); // z2 * 10^(2*m)
-    BigNumber *z1Shifted = shiftBigNumber(z1, m);     // z1 * 10^m
-    BigNumber *result = addBigNumbers(z2Shifted, z1Shifted);
-    result = addBigNumbers(result, z0);
-
-    // Liberar memória alocada para BigNumbers intermediários
-    freeBigNumber(a0);
-    freeBigNumber(a1);
-    freeBigNumber(b0);
-    freeBigNumber(b1);
-    freeBigNumber(z0);
-    freeBigNumber(z1);
-    freeBigNumber(z2);
-    freeBigNumber(temp);
-    freeBigNumber(z2Shifted);
-    freeBigNumber(z1Shifted);
-    freeBigNumber(sumA);
-    freeBigNumber(sumB);
-
-    return result;
-}
-
-
 // Returns the length of a BigNumber
 int getLength(BigNumber *bn) {
     int length = 0;
@@ -429,7 +308,6 @@ char *readinput() {
     return input;
 }
 
-// Convert to Bignumber
 BigNumber *stringToBigNumber(const char *str) {
     BigNumber *bn = createBigNumber(str); 
     if (bn == NULL) {
@@ -441,26 +319,70 @@ BigNumber *stringToBigNumber(const char *str) {
 
 // Divisão inteira (Euclidiana)
 BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
-    int sinalResultado = 1; 
-    if (a->isNegative != b->isNegative) {
-        sinalResultado = -1; 
+    if (!b || (b->head == b->tail && b->head->digit == 0)) {
+        fprintf(stderr, "Division by zero error.\n");
+        return NULL;
     }
-    BigNumber *dividendo = a->isNegative ? subtractBigNumbers(createBigNumber("0"), a) : a;
-    BigNumber *divisor = b->isNegative ? subtractBigNumbers(createBigNumber("0"), b) : b;
-    BigNumber *quociente = createBigNumber("0");
-    BigNumber *temporario = createBigNumber("0"); 
-    while (compareBigNumbers(dividendo, temporario) >= 0) {
-        quociente = addBigNumbers(quociente, createBigNumber("1"));
-        temporario = addBigNumbers(temporario, divisor);
+    // If a is zero, the result is zero
+    if (a->head == a->tail && a->head->digit == 0) {
+        return createBigNumber("0");
     }
-    quociente = subtractBigNumbers(quociente, createBigNumber("1"));
-    quociente->isNegative = sinalResultado == -1;
-    freeBigNumber(temporario); 
-    if (a->isNegative) freeBigNumber(dividendo);
-    if (b->isNegative) freeBigNumber(divisor);
-    return quociente;
+    BigNumber *quotient = createBigNumber("0");
+    BigNumber *current = createBigNumber("0");
+    Node *currentNode = a->head;
+    while (currentNode) {
+        // Append the current digit of the a to the "current" number
+        Node *newNode = (Node *)malloc(sizeof(Node));
+        newNode->digit = currentNode->digit;
+        newNode->prev = current->tail;
+        newNode->next = NULL;
+        if (current->tail) {
+            current->tail->next = newNode;
+        } else {
+            current->head = newNode;
+        }
+        current->tail = newNode;
+        // Remove leading zeros in the current number
+        while (current->head && current->head->digit == 0 && current->head != current->tail) {
+            Node *temp = current->head;
+            current->head = current->head->next;
+            if (current->head) current->head->prev = NULL;
+            free(temp);
+        }
+        // Find the largest multiple of b that fits into "current"
+        int count = 0;
+        while (compareBigNumbers(current, b) >= 0) {
+            BigNumber *temp = subtractPositiveBigNumbers(current, b);
+            freeBigNumber(current);
+            current = temp;
+            count++;
+        }
+        // Add the count to the quotient
+        Node *quotientNode = (Node *)malloc(sizeof(Node));
+        quotientNode->digit = count;
+        quotientNode->prev = quotient->tail;
+        quotientNode->next = NULL;
+        if (quotient->tail) {
+            quotient->tail->next = quotientNode;
+        } else {
+            quotient->head = quotientNode;
+        }
+        quotient->tail = quotientNode;
+        // Move to the next digit
+        currentNode = currentNode->next;
+    }
+    // Remove leading zeros in the quotient
+    while (quotient->head && quotient->head->digit == 0 && quotient->head != quotient->tail) {
+        Node *temp = quotient->head;
+        quotient->head = quotient->head->next;
+        if (quotient->head) quotient->head->prev = NULL;
+        free(temp);
+    }
+    // Set the sign of the result
+    quotient->isNegative = a->isNegative != b->isNegative;
+    freeBigNumber(current);
+    return quotient;
 }
-
 
 // Exponenciação 
 BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
