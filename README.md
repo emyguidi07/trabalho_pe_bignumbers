@@ -1,5 +1,6 @@
 # trabalho_pe_bignumbers
 Trabalho de bignumbers em C
+Alunas: Paloma Valéria Campos de Lima - RA 110202021803
 
 Estrutura e Organização: O código apresentado implementa uma classe para manipular números inteiros arbitrariamente grandes, denominados BigNumbers. A estrutura principal é uma lista duplamente encadeada, onde cada nó representa um dígito do número. A nossa estrutura de scripts foi a minima de bignumber.h , bignumber.c , makefile e cliente.c.
 
@@ -59,7 +60,7 @@ Emily:
 
 - Bateria de testes das três funcionalidades;
 
-- Ajustes em divisão de bignumbers e exponenciacao;
+- Ajustes em divisão de bignumbers e exponenciação;
 
 
 Paloma: 
@@ -73,6 +74,6 @@ Paloma:
   
 - Testar essas três funções manualmente e com os arquivos dele de teste;
 
-- Ajustes em divisão de bignumbers e exponenciacao;
+- Ajustes em divisão de bignumbers e exponenciação;
   
 - Escrever o READ ME.
