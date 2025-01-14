@@ -379,7 +379,10 @@ BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
         free(temp);
     }
     // Set the sign of the result
-    quotient->isNegative = a->isNegative != b->isNegative;
+    quotient->isNegative = (a->isNegative != b->isNegative);
+    if (quotient->head->digit == 0) {
+        quotient->isNegative = false;
+    }
     freeBigNumber(current);
     return quotient;
 }
