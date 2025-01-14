@@ -386,7 +386,7 @@ BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
     return quotient;
 }
 
-// Exponenciação 
+// Exponenciação
 BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
     if (compareBigNumbers(expoente, createBigNumber("0")) == 0) {
         // Caso base: qualquer número elevado a 0 é 1
@@ -395,18 +395,21 @@ BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
 
     // Tratamento para expoente negativo (a^-b = 1/a^b)
     if (expoente->isNegative) {
-        BigNumber *base_inversa = createBigNumber("1"); 
         BigNumber *expoente_positivo = subtractBigNumbers(createBigNumber("0"), expoente); 
         BigNumber *resultado = exponenciacao(base, expoente_positivo); 
-        if (resultado->head == resultado->tail && resultado->head->digit == 0) { // Se o resultado da exponenciação for zero, a divisão é indefinida
+        freeBigNumber(expoente_positivo);
+
+        // Verificação de divisão por zero na exponenciação de expoente negativo
+        if (compareBigNumbers(resultado, createBigNumber("0")) == 0) {
             fprintf(stderr, "Erro: Divisão por zero na exponenciação de expoente negativo.\n");
+            freeBigNumber(resultado);
             exit(1); 
         }
-        BigNumber *divisao = divideBigNumbers(base_inversa, resultado); 
-        freeBigNumber(base_inversa);
-        freeBigNumber(expoente_positivo);
+
+        // Realizar a inversão (1/resultado)
+        BigNumber *inversao = divideBigNumbers(createBigNumber("1"), resultado);
         freeBigNumber(resultado);
-        return divisao; 
+        return inversao; 
     }
 
     if (compareBigNumbers(expoente, createBigNumber("1")) == 0) {
@@ -414,39 +417,26 @@ BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
         return base;
     }
 
+    // Dividir o expoente por 2 para divisão e conquistar exponenciação eficiente
     BigNumber *metade = divideBigNumbers(expoente, createBigNumber("2")); 
     BigNumber *temp = exponenciacao(base, metade); 
 
-    // Verificação de overflow antes da multiplicação
+    // Multiplicação das metades (temp * temp)
     BigNumber *temp_resultado = multiplyBigNumbers(temp, temp); 
-    if (temp_resultado->head == NULL) { // Overflow na multiplicação
-        freeBigNumber(temp); 
-        freeBigNumber(metade); 
-        fprintf(stderr, "Erro: Overflow na exponenciação.\n");
-        exit(1); 
-    }
+    freeBigNumber(temp); 
 
-    BigNumber *resultado = temp_resultado; 
+    BigNumber *resultado = temp_resultado;
 
     if (expoente->head->digit % 2 == 1) { 
-        // Verificação de overflow antes da multiplicação adicional
+        // Se o expoente for ímpar, multiplicar por base adicionalmente
         temp_resultado = multiplyBigNumbers(resultado, base); 
-        if (temp_resultado->head == NULL) { // Overflow na multiplicação
-            freeBigNumber(resultado); 
-            freeBigNumber(temp); 
-            freeBigNumber(metade); 
-            fprintf(stderr, "Erro: Overflow na exponenciação.\n");
-            exit(1); 
-        }
         freeBigNumber(resultado); 
         resultado = temp_resultado; 
     }
 
     freeBigNumber(metade);
-    freeBigNumber(temp);
     return resultado;
 }
-
 // Resto da divisão
 BigNumber *restoDivisao(BigNumber *a, BigNumber *b) {
     BigNumber *quociente = divideBigNumbers(a, b);
