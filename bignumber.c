@@ -387,22 +387,62 @@ BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
     return quotient;
 }
 
-// Exponenciação 
+// Exponenciação 
 BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
     if (compareBigNumbers(expoente, createBigNumber("0")) == 0) {
         // Caso base: qualquer número elevado a 0 é 1
         return createBigNumber("1");
     }
+
+    // Tratamento para expoente negativo (a^-b = 1/a^b)
+    if (expoente->isNegative) {
+        BigNumber *base_inversa = createBigNumber("1"); 
+        BigNumber *expoente_positivo = subtractBigNumbers(createBigNumber("0"), expoente); 
+        BigNumber *resultado = exponenciacao(base, expoente_positivo); 
+        if (resultado->head == resultado->tail && resultado->head->digit == 0) { // Se o resultado da exponenciação for zero, a divisão é indefinida
+            fprintf(stderr, "Erro: Divisão por zero na exponenciação de expoente negativo.\n");
+            exit(1); 
+        }
+        BigNumber *divisao = divideBigNumbers(base_inversa, resultado); 
+        freeBigNumber(base_inversa);
+        freeBigNumber(expoente_positivo);
+        freeBigNumber(resultado);
+        return divisao; 
+    }
+
     if (compareBigNumbers(expoente, createBigNumber("1")) == 0) {
         // Caso base: qualquer número elevado a 1 é ele mesmo
         return base;
     }
+
     BigNumber *metade = divideBigNumbers(expoente, createBigNumber("2")); 
     BigNumber *temp = exponenciacao(base, metade); 
-    BigNumber *resultado = multiplyBigNumbers(temp, temp); 
-    if (expoente->isNegative == false && expoente->head->digit % 2 == 1) { 
-        resultado = multiplyBigNumbers(resultado, base); 
+
+    // Verificação de overflow antes da multiplicação
+    BigNumber *temp_resultado = multiplyBigNumbers(temp, temp); 
+    if (temp_resultado->head == NULL) { // Overflow na multiplicação
+        freeBigNumber(temp); 
+        freeBigNumber(metade); 
+        fprintf(stderr, "Erro: Overflow na exponenciação.\n");
+        exit(1); 
     }
+
+    BigNumber *resultado = temp_resultado; 
+
+    if (expoente->head->digit % 2 == 1) { 
+        // Verificação de overflow antes da multiplicação adicional
+        temp_resultado = multiplyBigNumbers(resultado, base); 
+        if (temp_resultado->head == NULL) { // Overflow na multiplicação
+            freeBigNumber(resultado); 
+            freeBigNumber(temp); 
+            freeBigNumber(metade); 
+            fprintf(stderr, "Erro: Overflow na exponenciação.\n");
+            exit(1); 
+        }
+        freeBigNumber(resultado); 
+        resultado = temp_resultado; 
+    }
+
     freeBigNumber(metade);
     freeBigNumber(temp);
     return resultado;
