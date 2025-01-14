@@ -40,8 +40,6 @@ A interface pública da classe BigNumber é composta pelas funções descritas a
 
 Algoritmos e Estruturas de Dados Avançadas
 
-Karatsuba: Utilizado para multiplicação de números grandes, reduzindo a complexidade em relação à multiplicação escolar.
-
 Exponenciação por quadrados: Um algoritmo eficiente para calcular potências.
 
 Lista duplamente encadeada: A estrutura de dados principal, escolhida por sua flexibilidade para inserir e remover elementos em qualquer posição.
@@ -57,24 +55,24 @@ Emily:
 
 - Função Subtração;
 
-- Multiplicação Karatsuba;
-
 - Melhoria nos dados de entrada do programa (modelo passado em sala de aula para captar dígito por dígito do Bignumber);
 
 - Bateria de testes das três funcionalidades;
 
-- Melhoria em bug do karatsuba (estava lendo apenas multiplicações de somente um dígito).
+- Ajustes em divisão de bignumbers e exponenciacao;
 
 
 Paloma: 
 
 
-- Elaborar função Divisão (divisão inteira)
+- Elaborar função Divisão (divisão inteira);
   
-- Elaborar função de exponenciação ( recomendo usar um algoritmo recursivo)
+- Elaborar função de exponenciação;
   
 - Elaborar função de resto de divisão;
   
 - Testar essas três funções manualmente e com os arquivos dele de teste;
+
+- Ajustes em divisão de bignumbers e exponenciacao;
   
 - Escrever o READ ME.
