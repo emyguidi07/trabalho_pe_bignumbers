@@ -21,6 +21,7 @@ BigNumber *addPositiveBigNumbers(BigNumber *a, BigNumber *b);
 BigNumber *addBigNumbers(BigNumber *a, BigNumber *b);
 BigNumber *subtractPositiveBigNumbers(BigNumber *a, BigNumber *b) ;
 BigNumber *subtractBigNumbers(BigNumber *a, BigNumber *b);
+BigNumber *createBigNumberFromBigNumber(BigNumber *src);
 int compareBigNumbers(BigNumber *a, BigNumber *b);
 void printBigNumber(BigNumber *bn);
 BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b);

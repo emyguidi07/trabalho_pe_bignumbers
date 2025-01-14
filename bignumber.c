@@ -316,7 +316,7 @@ BigNumber *stringToBigNumber(const char *str) {
     return bn;
 }
 
-// Divisão inteira (Euclidiana)
+// Divide BigNumbers
 BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
     if (!b || (b->head == b->tail && b->head->digit == 0)) {
         fprintf(stderr, "Division by zero error.\n");
@@ -386,58 +386,73 @@ BigNumber *divideBigNumbers(BigNumber *a, BigNumber *b) {
     return quotient;
 }
 
-// Exponenciação
+//copy a BigNumber
+BigNumber *createBigNumberFromBigNumber(BigNumber *src) {
+      BigNumber *copy = (BigNumber *)malloc(sizeof(BigNumber));
+    copy->head = NULL;
+    copy->tail = NULL;
+    copy->isNegative = src->isNegative;
+    Node *current = src->head;
+    while (current && current->digit == 0) {
+        current = current->next;
+    }
+    if (!current) {
+        Node *zeroNode = (Node *)malloc(sizeof(Node));
+        zeroNode->digit = 0;
+        zeroNode->prev = NULL;
+        zeroNode->next = NULL;
+        copy->head = zeroNode;
+        copy->tail = zeroNode;
+        return copy;
+    }
+    while (current) {
+        Node *newNode = (Node *)malloc(sizeof(Node));
+        newNode->digit = current->digit;
+        newNode->prev = copy->tail;
+        newNode->next = NULL;
+        if (copy->tail) {
+            copy->tail->next = newNode;
+        } else {
+            copy->head = newNode;
+        }
+        copy->tail = newNode;
+        current = current->next;
+    }
+    return copy;
+}
+
+
+// Exponentiate
 BigNumber *exponenciacao(BigNumber *base, BigNumber *expoente) {
-    if (compareBigNumbers(expoente, createBigNumber("0")) == 0) {
-        // Caso base: qualquer número elevado a 0 é 1
+    // Base case: return 1 when exponent is 0
+     if (compareBigNumbers(expoente, createBigNumber("0")) == 0) {
         return createBigNumber("1");
     }
-
-    // Tratamento para expoente negativo (a^-b = 1/a^b)
-    if (expoente->isNegative) {
-        BigNumber *expoente_positivo = subtractBigNumbers(createBigNumber("0"), expoente); 
-        BigNumber *resultado = exponenciacao(base, expoente_positivo); 
-        freeBigNumber(expoente_positivo);
-
-        // Verificação de divisão por zero na exponenciação de expoente negativo
-        if (compareBigNumbers(resultado, createBigNumber("0")) == 0) {
-            fprintf(stderr, "Erro: Divisão por zero na exponenciação de expoente negativo.\n");
-            freeBigNumber(resultado);
-            exit(1); 
-        }
-
-        // Realizar a inversão (1/resultado)
-        BigNumber *inversao = divideBigNumbers(createBigNumber("1"), resultado);
-        freeBigNumber(resultado);
-        return inversao; 
-    }
-
+    // Base case: return base when exponent is 1
     if (compareBigNumbers(expoente, createBigNumber("1")) == 0) {
-        // Caso base: qualquer número elevado a 1 é ele mesmo
-        return base;
+        return createBigNumberFromBigNumber(base);
     }
-
-    // Dividir o expoente por 2 para divisão e conquistar exponenciação eficiente
-    BigNumber *metade = divideBigNumbers(expoente, createBigNumber("2")); 
-    BigNumber *temp = exponenciacao(base, metade); 
-
-    // Multiplicação das metades (temp * temp)
-    BigNumber *temp_resultado = multiplyBigNumbers(temp, temp); 
-    freeBigNumber(temp); 
-
-    BigNumber *resultado = temp_resultado;
-
-    if (expoente->head->digit % 2 == 1) { 
-        // Se o expoente for ímpar, multiplicar por base adicionalmente
-        temp_resultado = multiplyBigNumbers(resultado, base); 
-        freeBigNumber(resultado); 
-        resultado = temp_resultado; 
+    // divide exponent / 2
+    BigNumber *metade = divideBigNumbers(expoente, createBigNumber("2"));
+    // recursive
+    BigNumber *temp = exponenciacao(base, metade);
+    // multiply result
+    BigNumber *resultado = multiplyBigNumbers(temp, temp);
+    // If the exponent is odd, multiply by the base value
+    if (expoente->head->digit % 2 == 1) {
+        BigNumber *tempResultado = multiplyBigNumbers(resultado, base);
+        freeBigNumber(resultado);
+        resultado = tempResultado;
     }
-
+    if (base->isNegative && (expoente->head->digit % 2 == 1)) {
+        resultado->isNegative = 1;
+    }
     freeBigNumber(metade);
+    freeBigNumber(temp);
     return resultado;
 }
-// Resto da divisão
+
+// Remainder of division
 BigNumber *restoDivisao(BigNumber *a, BigNumber *b) {
     BigNumber *quociente = divideBigNumbers(a, b);
     BigNumber *produto = multiplyBigNumbers(quociente, b);
