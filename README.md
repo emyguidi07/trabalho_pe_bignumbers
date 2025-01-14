@@ -17,7 +17,7 @@ Adição: Implementada de forma eficiente, considerando o carry.
 
 Subtração: Implementada de forma similar à adição, com o cuidado de lidar com empréstimos.
 
-Multiplicação: Utiliza o algoritmo de Karatsuba para otimizar a multiplicação de números grandes.
+Multiplicação: Otimização da multiplicação de números grandes.
 
 Divisão: Implementada usando um algoritmo de divisão longa.
 
@@ -37,7 +37,7 @@ Leitura de entrada dinâmica: A função readinput permite ler números de taman
 
 Alocação dinâmica de memória: O código utiliza malloc e free para alocar e liberar memória conforme necessário.
 
-Algoritmos eficientes: O uso de Karatsuba e exponenciação por quadrados otimiza o desempenho para números grandes.
+Algoritmos eficientes: Exponenciação recursiva por quadrados otimiza o desempenho para números grandes.
 
 ---
 
