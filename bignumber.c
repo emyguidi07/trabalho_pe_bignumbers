@@ -291,7 +291,6 @@ char *readinput() {
 
         char *input_new = realloc(input, (length + 1) * sizeof(char));
         if (input_new == NULL) {
-            printf("Erro ao alocar memória.\n");
             free(input);
             return NULL;
         }
