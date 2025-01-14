@@ -80,6 +80,7 @@ Emily:
 - Função Soma;
 - Função Subtração;
 - Melhoria nos dados de entrada do programa (modelo passado em sala de aula para captar dígito por dígito do Bignumber);
+- Elaborar função de multiplicação simples;
 - Bateria de testes das três funcionalidades;
 - Ajustes em divisão de bignumbers e exponenciação;
 
